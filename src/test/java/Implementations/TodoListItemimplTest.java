@@ -1,24 +1,52 @@
 package Implementations;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.awt.*;
+import java.time.Duration;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+
+@Tag("ToDoList")
 class TodoListItemImplementTest {
 
-    protected TodoListItemImplement item;
-    protected String title;
-    protected String newTitle = "Title was changed for TODO item";
+    private TodoListItemImplement item;
+    private TodoListItemImplement list;
+    private TodoListItemImplement[] todos;
+    private String title;
+    private String newTitle = "Title was changed for TODO item";
+    private static Logger logger;
 
     @BeforeAll
     public static void setUpGlobal() {
-
+        logger = LoggerFactory.getLogger(TodoListItemImplement.class);
     }
 
     @BeforeEach
     public void setUp() {
         title = "Todo item for test";
         item = new TodoListItemImplement(title);
+        list = new TodoListItemImplement();
+        todos = new TodoListItemImplement[]{
+                new TodoListItemImplement("Go for a walk with the dog"),
+                new TodoListItemImplement("Buy milk and sugar"),
+                new TodoListItemImplement("See favourite TV series")
+        };
     }
 
+    @Test
+    public void can_add_items_to_the_list() {
+        logger.info("Add items to list test");
+        list.addItem(todos[0]);
+        list.addItem(todos[1]);
+       // Assertions.assertEquals(2, list.length());
+    }
+
+    @Disabled
     @Test
     public void toggle_an_item() {
         item.toggle();
@@ -26,6 +54,8 @@ class TodoListItemImplementTest {
     }
 
     @Test
+    @DisplayName("UnToggle")
+    @RepeatedTest(10)
     public void unToggle_an_item() {
         item.toggle();
         item.toggle();
@@ -65,11 +95,24 @@ class TodoListItemImplementTest {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> item.setTitle(""));
     }
-    @AfterEach
-    public void tearDown() {
+
+    @Test
+    public void testPerformance() {
+
+        Assertions.assertTimeout(Duration.ofNanos(1), () -> item.setTitle("New title for performance verify"));
 
     }
 
+    @Test
+    public void given2Strings_whenEqual_thenCorrect() {
+        String a = "foo";
+        String b = "FOO";
+        assertThat(a, equalToIgnoringCase(b));
+    }
+
+    @AfterEach
+    public void tearDown() {
+    }
 
 
     @AfterAll
